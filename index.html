@@ -1,0 +1,181 @@
+<html>
+    <head>
+        <style>
+            body{
+                margin: 0;
+                padding: 0;
+            }
+            .image{
+                position: relative;
+            }
+            .inner{
+                position: relative;
+                display: block;
+            }
+            .inner img{
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%;
+                height:50%;
+                max-width: 300px;
+                border: transparent;
+            }
+            #canvas1{
+                position: absolute;
+                display: block;
+                z-index: 0;
+                background: transparent;
+            }
+
+        </style>
+    </head>
+<body>
+
+<div class="image">
+<canvas id="canvas1">
+
+</canvas>
+<div class="inner">
+<img id="image" src="f1.png"><br><br>
+<center>
+<button onclick="start()" style="font-size:20">Start</button>
+<button onclick="stop()" style="font-size:20">Stop</button><br>
+<button onclick="Motion()" style="font-size:20; margin-top:5;">Slow</button>
+<button onclick="Rater()" style="font-size:20; margin-top:5;">Raster</button>
+</center>
+</div>
+
+</div>
+<script>
+var ani;
+var i=1;
+var x,y,w,h;
+var canvas1;
+var path="";
+var j=1;
+var flag=false;
+const image2=new Image();
+const image1=new Image();
+var c,scanImage,scandata,tempdata,tempImage;
+var image=document.getElementById("image");
+function repeate(t){
+    image.src="f"+i+".png";
+    i=i+1;
+    if(i>6){
+        i=1;
+    }
+    ani=setTimeout(repeate,40)
+}
+function start(){
+    repeate(100);
+}
+function stop(){
+    clearTimeout(ani);
+}
+
+function PixelArt(p){
+    c = canvas1.getContext('2d');
+    image1.src=p;
+    image.src=""
+
+    c.drawImage(image1,x,y,w,h);
+     scanImage=c.getImageData(x,y,w,h);
+     scandata=scanImage.data;
+     tempImage=c.getImageData(x,y,w,h)
+     tempdata=tempImage.data;
+    let total=0,avg=1,r,g,b;
+
+    for(let i=0;i<scandata.length;i+=4){
+        scandata[i]=avg;
+           scandata[i+1]=avg;
+          scandata[i+2]=avg;
+    }
+       scanImage.data=scandata;
+    c.putImageData(scanImage,x,y)
+
+
+    if(flag){
+        for(let i=0;i<scandata.length;i+=4){
+        setTimeout(function(){
+         r=tempdata[i];
+         g=tempdata[i+1];
+         b=tempdata[i+2];
+
+          scandata[i]=r;
+          scandata[i+1]=g;
+          scandata[i+2]=b;
+        
+       scanImage.data=scandata;
+    c.putImageData(scanImage,x,y)
+        },0);
+    }
+    }
+    else{
+        for(let i=0;i<scandata.length;i+=4){
+         r=tempdata[i];
+         g=tempdata[i+1];
+         b=tempdata[i+2];
+
+          scandata[i]=r;
+          scandata[i+1]=g;
+          scandata[i+2]=b;
+        }
+        scanImage.data=scandata;
+        c.putImageData(scanImage,x,y)
+    }
+    
+}
+
+function getImageData(n){
+    image2.src="f"+n+".png";
+    let canva=document.createElement("canvas");
+    let canvactx=canva.getContext("2d");
+    canva.offsetLeft=x;
+    canva.offsetHeight=y;
+    canva.width=w;
+    canva.height=h;
+    canvactx.drawImage(image2,0,0,image.width,image.height);
+    let dataUri=canva.toDataURL('image/jpeg');
+    const Path=dataUri;
+
+    PixelArt(Path)
+}
+
+function slowMotion(){
+    clearTimeout(ani);
+    getImageData(j);
+    console.log(j)
+    j=j+1;
+    if(j>6){
+        j=1;
+    }
+}
+function Motion()
+{
+    flag=false;
+    slowMotion()
+}
+function Rater(){
+    flag=true;
+    slowMotion();
+}
+
+window.onload=function(){
+w=image.width;
+h=image.height;
+x=image.offsetLeft
+y=image.offsetTop
+
+canvas1=document.getElementById("canvas1");
+canvas2=document.getElementById("canvas2");
+canvas1.height=window.screenY;
+canvas1.width=window.screenX;
+}
+window.onresize=function(){
+canvas1.height=window.screenY;
+canvas1.width=window.screenX;
+}
+</script>
+</body>
+</html>
